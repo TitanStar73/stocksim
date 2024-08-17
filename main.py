@@ -4,7 +4,10 @@ HELP = """
 Commands:
     - buy <stock> <amount>
     - sell <stock> <amount>
-    - portfolio
+    - price <stock>
+    - portfolio #Specifies the stocks you own and the cash in hand
+    - net #Provides your net worth, make take a while to calculate
+    - info <stock> #Redirects you too yahoo finance for more info on the stock
 
 This sim uses realtime data so you can use any stock on NYSE
       
@@ -16,6 +19,8 @@ Need to see this again? Type 'help' or 'h' or '?'
 
 import json
 import requests
+from os import system as cmd
+import platform
 
 def get_stock_price(symbol):
     url = f"https://finance.yahoo.com/quote/{symbol}"
@@ -45,7 +50,7 @@ except FileNotFoundError:
 
 while True:
     try:
-        command = input("Enter command: ")
+        command = input("\n\nEnter command: ")
         if command == 'exit':
             with open("portfolio.json", "w+") as f:
                 json.dump(portfolio, f)
@@ -55,8 +60,40 @@ while True:
         elif command in {'help','h','?'}:
             print(HELP)
             continue
-        elif command in {'portfolio', 'p', 'net', 'worth'}:
-            print(f"Portfolio: {portfolio}")
+        elif command in {'portfolio', 'p'}:
+            print(f"\nPortfolio: ")
+            print(f"Cash in hand: {round(portfolio['cash'],2)}")
+            for stock in portfolio:
+                if stock != "cash":
+                    print(f"{stock}: {portfolio[stock]}")
+
+        elif command in {'net', 'worth'}:
+            worth = portfolio["cash"]
+            print("Calculating net worth...")
+            for i,stock in enumerate(portfolio):
+                print(f"{i}/{len(portfolio)}", end = "\r", flush = True)
+                if stock != "cash":
+                    worth += get_stock_price(stock)*portfolio[stock]
+            print(f"Net worth: ${round(worth,2)}")
+
+        elif command.split()[0] == 'info':
+            stock = command.split()[1]
+            print(f"Redirecting you to yahoo finance for more info on {stock}")
+            if platform.system() == "Windows":
+                cmd(f"start https://finance.yahoo.com/quote/{stock}")
+            else:
+                print(f"start https://finance.yahoo.com/quote/{stock}")
+
+        elif command.split()[0] == 'price':
+            stock = command.split()[1]
+            price = get_stock_price(stock)
+            if price == None:
+                print("Invalid stock symbol")
+                continue
+            if price == -1:
+                print("ERROR: Could not get stock price. Please try again later")
+                continue
+            print(f"Price of {stock} is ${round(price,2)} before brokerage fee of {BROKERAGE_FEE}%")
 
         elif command.split()[0] in {'buy','b'}:
             stock = command.split()[1]
@@ -79,9 +116,11 @@ while True:
                 print(f"You do not have enough cash to buy this stock. The most you can buy is {portfolio['cash']//price} stock(s)")
                 continue
 
-            print(f"Buying {amount} of {stock} for ${price*amount}")
+            print(f"Buying {amount} of {stock} for ${round(price*amount,2)}")
+            
             if stock not in portfolio:
                 portfolio[stock] = 0
+            
             portfolio[stock] += amount
             portfolio["cash"] -= price*amount
 
@@ -112,10 +151,13 @@ while True:
             price *= (1-(BROKERAGE_FEE/100))
             portfolio[stock] -= amount
             portfolio["cash"] += price*amount
-            print(f"Selling {amount} of {stock}. Received ${price*amount} for {amount} of {stock}")
+            print(f"Selling {amount} of {stock}. Received ${round(price*amount)} for {amount} of {stock}")
             
         else:
             print("Invalid command. Type 'h' for help")
             continue
-    except:
+    except Exception as e:
+        if e == KeyboardInterrupt:
+            print("Quitting...")
+            break
         pass
