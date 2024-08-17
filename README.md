@@ -1,3 +1,3 @@
 # stocksim
 
-Console absed stock sim which uses real prices!
+Console based stock sim which uses real prices!
