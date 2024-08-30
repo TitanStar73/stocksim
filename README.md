@@ -1,6 +1,9 @@
 # stocksim
 
-Console based stock sim which uses real prices!
+Console based stock sim which uses real current prices on the New York Stock Exchange!
+
+![image](https://github.com/user-attachments/assets/ea5eb926-8c61-4f87-9e44-cb0d06084141)
+
 
 # Commands:
     - buy <stock> <amount>
@@ -12,9 +15,11 @@ Console based stock sim which uses real prices!
 
 This sim uses realtime data so you can use any stock on NYSE
       
-Need to take a break? Type `exit` to exit the sim. We will save your portfolio for you in portfolio.json
+# Need to take a break? 
+Type `exit` to exit the sim. We will save your portfolio for you in portfolio.json
 
-Want to start afresh? Type `quit` to delete your portfolio and start afresh (this will not delete your portfolio.json file but will stop the program without creating a new one)
+# Want to start afresh? 
+Type `quit` to delete your portfolio and start afresh (this will not delete your portfolio.json file but will stop the program without creating a new one)
 
 # Installation options
  - Run main.py (no dependencies)
