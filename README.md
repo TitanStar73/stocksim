@@ -1,4 +1,4 @@
-# stocksim
+# Stock Simulator
 
 Console based stock sim which uses real current prices on the New York Stock Exchange!
 
